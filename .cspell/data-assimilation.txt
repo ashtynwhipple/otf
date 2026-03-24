@@ -10,6 +10,7 @@ Kalman
 Kuramoto
 Kutta
 Levenberg
+lotka
 Marquardt
 multistep
 Runge
@@ -17,3 +18,4 @@ Singlestep
 Sivashinsky
 stochasticity
 syncd
+volterra
