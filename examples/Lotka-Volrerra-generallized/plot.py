@@ -8,7 +8,7 @@ def plot(cs, u_errors, gs, tls, param_indices=None):
     tls : time array
     param_indices : list of indices of parameters to plot (optional)
     """
-    cs = np.nan_to_num(np.asarray(cs), nan=0.0, posinf=1e6, neginf=-1e6)
+    # cs = np.nan_to_num(np.asarray(cs), nan=0.0, posinf=1e6, neginf=-1e6)
     gs = np.asarray(gs)
 
     num_iters, num_params = cs.shape
@@ -25,11 +25,23 @@ def plot(cs, u_errors, gs, tls, param_indices=None):
 
     for plot_idx, i in enumerate(param_indices):
         ax = axs[plot_idx]
+
+        col = cs[:, i]
+        first_nan = np.argmax(~np.isfinite(col))  # index of first nan/inf
+        if first_nan == 0 and np.isfinite(col[0]):
+            first_nan = len(col)  # no nans, use full array
+
+        col_clean = col[:first_nan]
+        ils_clean = ils[:first_nan]
+
         ax.hlines(gs[i], ils[0], ils[-1], color="black", label=f"g{i + 1}")
-        ax.plot(ils, cs[:, i], label=f"c{i + 1}")
+        ax.plot(ils_clean, col_clean, label=f"c{i + 1}")
+
+        # ax.hlines(gs[i], ils[0], ils[-1], color="black", label=f"g{i + 1}")
+        # ax.plot(ils, cs[:, i], label=f"c{i + 1}")
 
         # Center axis around true value
-        spread = np.max(np.abs(cs[:, i] - gs[i]))
+        spread = np.nanmax(np.abs(cs[:, i] - gs[i]))
         spread = max(spread, 1e-6)
         ax.set_ylim(gs[i] - 1.5*spread, gs[i] + 1.5*spread)
 
